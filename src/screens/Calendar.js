@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Platform, ScrollView, Text, TextInput, View } from 'react-native';
+import { Alert, Platform, ScrollView, Text, TextInput, View } from 'react-native';
 import { connect } from 'react-redux';
 
 import moment from 'moment';
@@ -17,6 +17,7 @@ import { Dialog } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import SearchableDropDown from 'react-native-searchable-dropdown';
 import DatePicker from '../components/DatePicker';
+import { FloatingLabelInput } from 'react-native-floating-label-input';
 function CalendarScreen(props) {
 
 
@@ -43,9 +44,9 @@ function CalendarScreen(props) {
         companyName: "",
         endDate: null,
         startDate: new Date(),
-        explanationText: "",
+        explanationText: undefined,
         groupId: 0,
-        title: "",
+        title: undefined,
         customerId: 0,
         projectId: 0,
         customerAgentId: 1
@@ -84,8 +85,14 @@ function CalendarScreen(props) {
     }
     const workGroupCreate = async () => {
 
+        
+        if (!requestData.explanationText) {
+            Alert.alert("Hatalı İşlem","İşin açıklaması girilmelidir")
+            return false
+        }
+
         var url = apiConstant.BaseUrl + "/api/DebisWorkPlan/CreateWorkPlan"
-        var rps = await PostAxios(url, requestData).then(x => { return x.data }).catch(x => { return x });
+        var rps = await PostAxios(url, requestData).then(x => { return x.data }).catch(x => { return undefined });
 
         setRequestData({
             companyName: "",
@@ -101,9 +108,10 @@ function CalendarScreen(props) {
 
 
         if (rps) {
-            alert("Kayıt Başarılı")
+           Alert.alert("Başarılı","Takvim kaydı başarılı bir şekilde yapıldı")
+            setEventCreateDialog(false)
         } else {
-            alert("Kayıt yapılamadı")
+            Alert.alert("Hatalı İşlem","Eksik alanları doldurunuz")
         }
         fillCalendar(moment(new Date(), "yyyy-MM-DD").add(-1, 'month'), moment(new Date(), "yyyy-MM-DD").add(1, 'month'))
 
@@ -205,8 +213,9 @@ function CalendarScreen(props) {
                 <Calendar
                     date={activeDate}
                     swipeEnabled={false}
+                    
                     renderHeaderForMonthView={(dd) => {
-                        var ss = ["Ptesi", "Sal", "Çar", "Per", "Cum", "Ctesi", "Pzr"].map((item, key) => {
+                        var ss = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Pzr"].map((item, key) => {
                             return (<Text key={key} style={{
                                 alignItems: "center",
                                 flex: 1,
@@ -231,7 +240,8 @@ function CalendarScreen(props) {
                     renderEvent={(d) => <View style={{ backgroundColor: d.backColor, height: 18, justifyContent: "center", borderRadius: 5 }}><Text style={{ fontSize: 10, color: "white" }}> {d.title?.substring(0, 5)}...</Text></View>}
                     mode='month'
                     onPressEvent={(d) => { setSelectedEvent(d); }}
-                    locale='tr'
+                   
+                    weekStartsOn={1}
                     events={sampleEvents} height={600} />
             }
 
@@ -250,9 +260,9 @@ function CalendarScreen(props) {
                 </View>
             </Dialog>
 
-            <Dialog visible={eventCreateDialog} style={{ borderRadius: 10, padding: 5, justifyContent: "center", alignItems: "center" }}>
+            {eventCreateDialog && <View style={{ backgroundColor: "white", position: "absolute", borderRadius: 10, padding: 5, justifyContent: "flex-start", alignItems: "center", width: "100%", height: "100%" }}>
                 <View style={{ width: "100%" }}>
-                    <Text style={{ fontWeight: "bold", fontSize: 18, color: "#1B5E20" }}>{"Takvim Kaydı Oluştur"}</Text>
+                    <Text style={{ fontWeight: "bold", fontSize: 18, color: "#1B5E20", textAlign: "center" }}>{"Takvim Kaydı Oluştur"}</Text>
                     <View style={{ flexDirection: "column", justifyContent: "center", marginTop: 20 }}>
 
                         <View style={{ flexDirection: "row", marginTop: 7, justifyContent: "center", alignItems: "center" }}>
@@ -275,14 +285,30 @@ function CalendarScreen(props) {
                                 onChange={(e, d) => { setActiveDate(d); setRequestData({ ...requestData, endDate: moment(d).add(1,"day")  }) }}
                             />
                         </View> */}
-                        <View style={{ flexDirection: "row", marginTop: 1, height: 70, overflow: "hidden", justifyContent: "center", alignItems: "center" }}>
-                            <Text style={{ fontWeight: "bold" }}>işin Açıklaması</Text>
+                        <View style={{ flexDirection: "row", marginTop: 20, height: 70, overflow: "hidden", justifyContent: "center", alignItems: "center" }}>
+                            {/* <Text style={{ fontWeight: "bold" }}>işin Açıklaması</Text> */}
                             <View style={{ flex: 1 }}>
-                                <TextInput onChangeText={(d) => { setIsinAciklamasi(d); setRequestData({ ...requestData, explanationText: d }) }} style={{ padding: 5, height: 60, borderColor: "black", borderWidth: 1, borderStyle: 'solid', width: "100%" }} ></TextInput>
+                                {/* <TextInput onChangeText={(d) => { setIsinAciklamasi(d); setRequestData({ ...requestData, explanationText: d }) }} style={{ padding: 5, height: 60, borderColor: "black", borderWidth: 1, borderStyle: 'solid', width: "100%" }} ></TextInput> */}
+
+                                <FloatingLabelInput
+                                    label="İşin Açıklaması"
+                                     value={requestData.explanationText}
+                                    inputMode="email"
+                                    onChangeText={(d) => { setIsinAciklamasi(d); setRequestData({ ...requestData, explanationText: d }) }}
+                                    darkTheme={true}
+                                    containerStyles={{
+                                        borderWidth: 2,
+                                        padding: 10,
+                                        backgroundColor: '#fff',
+                                        borderColor: '#2196F3',
+                                        borderRadius: 8,
+                                    }}
+                                />
+
                             </View>
                         </View>
                         <View style={{ flexDirection: "row", marginTop: 1, height: 110, overflow: "hidden", justifyContent: "center", alignItems: "center" }}>
-                            <Text style={{ fontWeight: "bold" }}>Çalışma Tipi</Text>
+                            
                             <View style={{ flex: 1 }}>
                                 <Picker
 
@@ -299,7 +325,7 @@ function CalendarScreen(props) {
                                         }
 
                                     }}>
-                                    <Picker.Item label={"Seçiniz"} value={null} />
+                                    <Picker.Item label={"Çalışma Tipi"} value={null} />
                                     {gropBase.map((item, key) => {
                                         return <Picker.Item key={key} label={item.name} value={item.id} />
                                     })}
@@ -307,11 +333,13 @@ function CalendarScreen(props) {
                                 </Picker>
                             </View>
                         </View>
+                        <View style={{backgroundColor:"#B0BEC5",width:"100%",height:1,marginBottom:20}}>
 
+                            </View>
 
 
                         {subGropBase.length > 0 && <View style={{ flexDirection: "row", marginTop: 1, height: 80, overflow: "hidden", justifyContent: "center", alignItems: "center" }}>
-                            <Text style={{ fontWeight: "bold" }}>Yapılan Çalışma</Text>
+                          
                             <View style={{ flex: 1 }}>
                                 <Picker
                                     itemStyle={{ fontSize: 13 }}
@@ -325,7 +353,7 @@ function CalendarScreen(props) {
                                         }
 
                                     }}>
-                                    <Picker.Item label={"Seçiniz"} value={null} />
+                                    <Picker.Item label={"Yapılan Çalışma Seçiniz"} value={null} />
                                     {subGropBase.map((item, key) => {
                                         return <Picker.Item key={key} label={item.name} value={item.id} />
                                     })}
@@ -333,10 +361,10 @@ function CalendarScreen(props) {
                                 </Picker>
                             </View>
                         </View>}
-                        {isCompanyView.customerSelect && <View style={{ flexDirection: "row", marginTop: 1, height: 80, overflow: "hidden", justifyContent: "center", alignItems: "center" }}>
+                        {isCompanyView.customerSelect && <View style={{ flexDirection: "row", marginTop: 10, height: 80, overflow: "hidden", justifyContent: "center", alignItems: "center" }}>
 
                             <TouchableOpacity onPress={() => setFirmDialog(true)} style={{ backgroundColor: "#6A1B9A", padding: 15 }}>
-                                <Text style={{ fontWeight: "bold", color: "white" }}>DETAYLARI SEÇ</Text>
+                                <Text style={{ fontWeight: "bold", color: "white" }}>Firma Proje/Şantiye Seç</Text>
                             </TouchableOpacity>
 
 
@@ -345,20 +373,20 @@ function CalendarScreen(props) {
                     </View>
 
                     <View style={{ flexDirection: "row", justifyContent: "space-evenly", marginTop: 30, paddingBottom: 5 }}>
-                        <TouchableOpacity onPress={() => { workGroupCreate(); setSelectedEvent(undefined); setEventCreateDialog(false) }} style={{ backgroundColor: "green", width: 100, justifyContent: "center" }}><Text style={{ textAlign: "center", color: "white", fontWeight: "bold", fontSize: 16, padding: 8 }}>Kaydet</Text></TouchableOpacity>
+                        <TouchableOpacity onPress={() => { workGroupCreate(); setSelectedEvent(undefined);  }} style={{ backgroundColor: "green", width: 100, justifyContent: "center" }}><Text style={{ textAlign: "center", color: "white", fontWeight: "bold", fontSize: 16, padding: 8 }}>Kaydet</Text></TouchableOpacity>
                         <TouchableOpacity onPress={() => setEventCreateDialog(false)} style={{ backgroundColor: "red", width: 100, justifyContent: "center" }}><Text style={{ textAlign: "center", color: "white", fontWeight: "bold", fontSize: 16, padding: 8 }}>Vazgeç</Text></TouchableOpacity>
 
                     </View>
                 </View>
-            </Dialog>
+            </View>}
 
-            <Dialog visible={firmDialog} style={{ borderRadius: 10, padding: 5, height: "100%", flexDirection: "column" }}>
-                <View style={topMargin == true && { marginTop: -100 } || { marginTop: 0 }} >
+            <Dialog visible={firmDialog} style={{ borderRadius: 10, padding: 5,flexDirection: "column" }}>
+                <View  >
                     <Text style={{ fontWeight: "bold", fontSize: 18, color: "#1B5E20" }}>{"Firma Şantiye"}</Text>
 
 
                     <View style={{ marginTop: 15 }}>
-                        <Text>Firma Seç</Text>
+                       
                         <SearchableDropDown
                             onItemSelect={(item) => {
                                 setSelectedCompany(item);
@@ -383,15 +411,15 @@ function CalendarScreen(props) {
                             resetValue={false}
                             textInputProps={
                                 {
-                                    placeholder: "Firma Arayınız",
-                                    underlineColorAndroid: "Firma Arayınız",
+                                    placeholder: "Firma Seçiniz",
+                                    underlineColorAndroid: "Firma Seçiniz",
                                     style: {
                                         padding: 12,
                                         borderWidth: 1,
                                         borderColor: '#ccc',
                                         borderRadius: 5,
                                     },
-                                    onblur: () => { alert("fds") },
+                                    
                                     onTextChange: text => {
                                         if (text.length >= 2) {
                                             setComapmySelectList([]);
@@ -410,7 +438,7 @@ function CalendarScreen(props) {
                         /></View>
 
                     {selectedCompany && <View style={{ marginTop: 10 }}>
-                        <Text>Proje Seç</Text>
+                      
                         <SearchableDropDown
                             onItemSelect={(item) => {
 
@@ -436,8 +464,8 @@ function CalendarScreen(props) {
                             resetValue={false}
                             textInputProps={
                                 {
-                                    placeholder: "Proje Arayınız",
-                                    underlineColorAndroid: "Proje Arayınız",
+                                    placeholder: "Proje Seçiniz",
+                                    underlineColorAndroid: "Proje Seçiniz",
                                     style: {
                                         padding: 12,
                                         borderWidth: 1,
@@ -460,7 +488,7 @@ function CalendarScreen(props) {
                             }
                         /></View>}
                     {selectedCompany && <View style={{ marginTop: 10, marginBottom: 70 }}>
-                        <Text>Firma Yetkilisi</Text>
+                    
                         <SearchableDropDown
                             onItemSelect={(item) => {
 
@@ -491,8 +519,8 @@ function CalendarScreen(props) {
                             resetValue={false}
                             textInputProps={
                                 {
-                                    placeholder: "Firma Yetkilisi Ara",
-                                    underlineColorAndroid: "Firma Yetkilisi Ara",
+                                    placeholder: "Firma Yetkilisi Seçiniz",
+                                    underlineColorAndroid: "Firma Yetkilisi Seçiniz",
                                     style: {
                                         padding: 12,
                                         borderWidth: 1,
@@ -518,7 +546,7 @@ function CalendarScreen(props) {
 
 
                 </View>
-                <View style={{ flexDirection: "row", justifyContent: "space-evenly", marginBottom: 100, paddingBottom: 5 }}>
+                <View style={{ flexDirection: "row", justifyContent: "space-evenly", marginBottom: 20, paddingBottom: 5 }}>
                     <TouchableOpacity onPress={() => setFirmDialog(false)} style={{ backgroundColor: "green", width: 100, justifyContent: "center" }}><Text style={{ textAlign: "center", color: "white", fontWeight: "bold", fontSize: 16, padding: 8 }}>Tamam</Text></TouchableOpacity>
                     {/* <TouchableOpacity onPress={() => setFirmDialog(false)} style={{ backgroundColor: "red", width: 100, justifyContent: "center" }}><Text style={{ textAlign: "center", color: "white", fontWeight: "bold", fontSize: 16, padding: 8 }}>Vazgeç</Text></TouchableOpacity> */}
 

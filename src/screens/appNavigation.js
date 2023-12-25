@@ -119,7 +119,7 @@ export default function AppNavigation({ initialData,startApp }) {
             <NavigationContainer>
                 <AppStack.Navigator initialRouteName="Geri">
                     <AppStack.Screen name="Geri" options={{ headerShown: false }} component={MyDrawer} />
-                    <AppStack.Screen name="FormDetail" component={FormDetailScreen} />
+                    <AppStack.Screen name="FormDetail" options={{title:"From Detayı"}}  component={FormDetailScreen} />
                 </AppStack.Navigator>
             </NavigationContainer>
         </Provider>

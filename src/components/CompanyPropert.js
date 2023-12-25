@@ -3,19 +3,22 @@ import React, { useEffect, useState } from 'react';
 
 
 
-import { Text, View, TextInput, ScrollView, Button, Image, TouchableOpacity } from 'react-native';
+import { Text, View, TextInput, ScrollView, Button, Image, TouchableOpacity, Dimensions } from 'react-native';
 import { FloatingLabelInput } from 'react-native-floating-label-input';
 import { Switch } from 'react-native-gesture-handler';
 import * as ImagePicker from 'expo-image-picker';
 import { GetAxios, PostAxios } from '../apiCrud/crud';
 import { apiConstant } from '../apiCrud/apiConstant';
+import Loading from './loading';
 
 
-export default function CompanyProperty({ companyName, companyType, companyId, loading, setHideLabel, setProperty, properties = [], hideLabel, setListProperty, formName }) {
+export default function CompanyProperty({ companyName, companyType, companyId, setHideLabel, setProperty, properties = [], hideLabel, setListProperty, formName }) {
 
     const [refresh, setRefresh] = useState()
     const [valueById, setValueById] = useState([]);
     const [image, setImage] = useState(null);
+    const [loading, setLoading] = useState(false);
+
     const [status, requestPermission] = ImagePicker.useCameraPermissions();
     const changeVal = (val, propId, isUpload = false) => {
         var dd = valueById.filter(x => { return x.id != propId })
@@ -33,9 +36,9 @@ export default function CompanyProperty({ companyName, companyType, companyId, l
             dataFlt.push(item)
         }
         setValueById(dataFlt);
-        console.log(d.data)
+       
     }
- 
+
 
 
     const pickImage = async (propId) => {
@@ -48,18 +51,18 @@ export default function CompanyProperty({ companyName, companyType, companyId, l
         });
 
         if (!result.canceled) {
-            changeVal("data:image/png;base64,"+result.assets[0].base64, propId, true)
+            changeVal("data:image/png;base64," + result.assets[0].base64, propId, true)
         }
     };
 
     const save = async () => {
-
+        setLoading(true)
         var d = await PostAxios(apiConstant.BaseUrl + "/api/Company/SetPropertyList", {
             companyId: companyId,
             list: valueById
 
         }).then(x => { return x.data }).catch(x => { return x });
-
+        setLoading(false)
     };
     useEffect(() => {
 
@@ -72,7 +75,7 @@ export default function CompanyProperty({ companyName, companyType, companyId, l
 
     return (
         <>
-            <View style={{ justifyContent: "space-between", alignItems: "center", flexDirection: "row", backgroundColor: "white" }}>
+            <View style={{ justifyContent: "space-between", alignItems: "center", flexDirection: "row", backgroundColor: "white",borderBottomColor:"#616161",borderBottomWidth:2 }}>
                 <View style={{ paddingLeft: 10, justifyContent: "center" }}>
                     <Text style={{ fontWeight: "bold" }}>
                         {companyType}
@@ -83,13 +86,16 @@ export default function CompanyProperty({ companyName, companyType, companyId, l
                 </View>
 
 
-                <TouchableOpacity onPress={() => { save() }} style={{ backgroundColor: "green", padding: 15 }}>
-                    <Text style={{ fontWeight: "bold", color: "white" }}>Kaydet</Text>
+                <TouchableOpacity onPress={() => { save() }} style={{ backgroundColor: "green", padding: 15, flexDirection: "row" }}>
+
+                    <Text style={{ fontWeight: "bold", color: "white", marginLeft: 10 }}>
+
+                        Kaydet</Text>
                 </TouchableOpacity>
             </View>
 
 
-            <ScrollView style={{ padding: 20, }} className="row col-12">
+            <ScrollView style={{ padding: 20, height: Dimensions.get("window").height - 50 }} className="row col-12">
 
                 {properties.map((item, key) => {
 
@@ -104,7 +110,7 @@ export default function CompanyProperty({ companyName, companyType, companyId, l
                                     label={item.key}
                                     inputMode="text"
                                     value={valueById.find(x => { return x.id == item.id })?.value}
-                                    onChangeText={(val) => { console.log(valueById); changeVal(val, item.id, false); setHideLabel(); }}
+                                    onChangeText={(val) => {  changeVal(val, item.id, false); setHideLabel(); }}
                                 />
                             </View>
                         </View>)
@@ -119,7 +125,7 @@ export default function CompanyProperty({ companyName, companyType, companyId, l
                                     label={item.key}
                                     inputMode="numeric"
                                     value={valueById.find(x => { return x.id == item.id })?.value}
-                                    onChangeText={(val) => { console.log(valueById); changeVal(val, item.id, false); setHideLabel(); }}
+                                    onChangeText={(val) => {  changeVal(val, item.id, false); setHideLabel(); }}
                                 />
 
                             </View>
@@ -177,7 +183,7 @@ export default function CompanyProperty({ companyName, companyType, companyId, l
                                         trackColor={{ false: 'red', true: 'green' }}
                                         thumbColor={false ? '#f5dd4b' : '#f4f3f4'}
                                         ios_backgroundColor="#3e3e3e"
-                                        onValueChange={(val) => { console.log(valueById); changeVal(val, item.id, true); setHideLabel(); }}
+                                        onValueChange={(val) => {  changeVal(val, item.id, false); setHideLabel(); }}
 
                                         value={valueById.find(x => { return x.id == item.id })?.value == "True" ? true : valueById.find(x => { return x.id == item.id })?.value}
                                     />
@@ -190,13 +196,15 @@ export default function CompanyProperty({ companyName, companyType, companyId, l
                     }
 
                     if (item.companyPropertyValueType == 6) {
-                        return <View key={key} style={{backgroundColor:"#B2DFDB",
-                        marginBottom:10,
-                        padding:10,
-                        borderColor:"#26A69A",
-                        borderWidth:1,
-                        borderStyle:"solid"}}>
-                            <Text style={{fontWeight:"bold"}}>{item.key} </Text>
+                        return <View key={key} style={{
+                            backgroundColor: "#B2DFDB",
+                            marginBottom: 10,
+                            padding: 10,
+                            borderColor: "#26A69A",
+                            borderWidth: 1,
+                            borderStyle: "solid"
+                        }}>
+                            <Text style={{ fontWeight: "bold" }}>{item.key} </Text>
                             <View cla style={{ position: "relative" }}>
 
 
@@ -211,7 +219,17 @@ export default function CompanyProperty({ companyName, companyType, companyId, l
 
 
                 })}
+                <View style={{ height: 100, width: "100%", }}>
+
+                </View>
             </ScrollView>
+            {loading && <View style={{ paddingTop: 50, position: "absolute", backgroundColor: "#ffffffc2", height: "100%", width: "100%", flexDirection: "column",alignItems:"center" }}>
+                <Loading height={50} width={50}></Loading>
+                <View>
+                    <Text>Kaydediliyor</Text>
+
+                </View>
+            </View>}
         </>
     )
 }

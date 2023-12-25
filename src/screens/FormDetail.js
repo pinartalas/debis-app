@@ -45,6 +45,7 @@ function FormDetailScreen(props) {
 
     }
     const setProperty = async (value, propertyId, isUpload = false) => {
+     
         setLoading(true)
 
         if (isUpload) {
@@ -97,7 +98,7 @@ function FormDetailScreen(props) {
 
 
                 <View >
-                    <CompanyProperty companyType={props.route.params.companyType}  companyName={props.route.params.companyName} companyId={props.route.params.id} loading={loading} setListProperty={setListProperty} hideLabel={hideLabel} setHideLabel={setHideLabel} setProperty={setProperty} properties={properties}></CompanyProperty>
+                    <CompanyProperty companyType={props.route.params.companyType}  companyName={props.route.params.companyName} companyId={props.route.params.id}  setListProperty={setListProperty} hideLabel={hideLabel} setHideLabel={setHideLabel} setProperty={setProperty} properties={properties}></CompanyProperty>
 
                 </View>
 
