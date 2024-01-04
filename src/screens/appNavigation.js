@@ -17,11 +17,14 @@ import YillikIzinScreen from './YillikIzin';
 import FromsScreen from './Forms';
 import FormDetailScreen from './FormDetail';
 import AvansScreen from './Avans';
+import FormsScreen from './Forms';
+import { apiConstant } from '../apiCrud/apiConstant';
+import { GetAxios } from '../apiCrud/crud';
 
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
-export default function AppNavigation({ initialData,startApp }) {
+export default function AppNavigation({ initialData, startApp }) {
     const INPUT_RANGE_START = 0;
     const INPUT_RANGE_END = 1;
     const OUTPUT_RANGE_START = -281;
@@ -30,11 +33,15 @@ export default function AppNavigation({ initialData,startApp }) {
     const ANIMATION_DURATION = 25000;
     const initialValue = 0;
     const [logOut, setLogOut] = React.useState();
+    const [formDorpdown, setFormDropdown] = React.useState(false);
+    const [companyGroup, setCompanyGroup] = React.useState([]);
+
 
     const translateValue = React.useRef(new Animated.Value(initialValue)).current;
     useEffect(() => {
 
 
+        getGruop()
         const translate = () => {
             translateValue.setValue(initialValue);
             Animated.timing(translateValue, {
@@ -48,7 +55,10 @@ export default function AppNavigation({ initialData,startApp }) {
         translate();
     }, [translateValue]);
 
-
+    const getGruop = async () => {
+        var cprop = await GetAxios(apiConstant.BaseUrl + "/api/CompanyGroup/getAll").then(x => { return x.data }).catch(x => { return x });
+        
+    }
     const translateAnimation = translateValue.interpolate({
         inputRange: [INPUT_RANGE_START, INPUT_RANGE_END],
         outputRange: [OUTPUT_RANGE_START, OUTPUT_RANGE_END],
@@ -78,7 +88,7 @@ export default function AppNavigation({ initialData,startApp }) {
 
                 <SafeAreaView forceInset={{ top: 'always', horizontal: 'never' }} style={{ flex: 1 }}>
                     <View style={{ flexDirection: "column", flex: 1 }}>
-                        <View> 
+                        <View>
                             <View style={{ marginBottom: 5, marginTop: 25, flexDirection: "row", justifyContent: "center" }}>
                                 <Logo url={"https://www.detambilgislem.biz.tr/demo/Personel/" + initialData.resimUrl} />
                             </View>
@@ -86,16 +96,47 @@ export default function AppNavigation({ initialData,startApp }) {
 
                                 <Text style={{ color: "#1565C0", fontSize: 18, fontWeight: "bold" }}>{initialData.ad + " " + initialData.soyad}</Text>
                                 <Text style={{ color: "#1565C0", fontSize: 14 }}>{"(" + initialData.jobTitleName + ")"}</Text>
-                                <Text style={{ color: "#1565C0", fontSize: 14 }}><Text style={{fontWeight:"bold"}}>Şube :</Text> { initialData.branch}</Text>
-                                <Text style={{ color: "#1565C0", fontSize: 14 }}><Text style={{fontWeight:"bold"}}>Departman :</Text> { initialData.department}</Text>
+                                <Text style={{ color: "#1565C0", fontSize: 14 }}><Text style={{ fontWeight: "bold" }}>Şube :</Text> {initialData.branch}</Text>
+                                <Text style={{ color: "#1565C0", fontSize: 14 }}><Text style={{ fontWeight: "bold" }}>Departman :</Text> {initialData.department}</Text>
 
 
                             </View>
                         </View>
                         <ScrollView style={{ flex: 1, flexDirection: "column" }}>
                             <DrawerItemList   {...props} />
+
+                            <View style={{ paddingLeft: 20, marginTop: 10 }}>
+                                <TouchableOpacity style={{ flexDirection: "row", justifyContent: "space-between" }} onPress={() => { setFormDropdown(!formDorpdown) }}>
+
+                                    <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+                                        <Icon name="file" size={30} color="#AD1457" />
+                                        <Text style={{ marginLeft: 35, fontSize: 13 }}>Formlar</Text>
+                                    </View>
+
+                                    <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+                                        {!formDorpdown && <Icon name="chevron-circle-down" style={{ marginRight: 30 }} size={20} color="black" />
+                                        }
+                                        {formDorpdown && <Icon name="chevron-circle-up" style={{ marginRight: 30 }} size={20} color="black" />
+                                        }
+                                    </View>
+
+
+                                </TouchableOpacity>
+                                {formDorpdown && <View style={{ flexDirection: "column",paddingTop:20}}>
+                                    {
+                                        companyGroup?.map((item,key)=>{
+                                            return <TouchableOpacity onPress={()=>props.navigation.navigate("rapor",{groupId:item.id})} key={key} style={{paddingBottom:13,paddingTop:13, marginTop:5,marginBottom:5,paddingLeft:25}}>
+                                                <Text>
+                                                   <Icon name='arrow-right'></Icon> {item.name}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        })
+                                    }
+                                </View>}
+
+                            </View>
                         </ScrollView>
-                        <View>
+                        <View >
                             <View style={{ marginBottom: 25, flexDirection: "column" }}>
                                 <TouchableOpacity style={{ alignSelf: "center", marginBottom: 5, flexDirection: "column", borderRadius: 5, width: "98%", height: 35, justifyContent: "center" }} onPress={async () => { await AsyncStorage.removeItem("llsddtmllgn").then(x => { return x }); startApp() }} >
                                     <Text style={{ textAlign: "center", fontWeight: 'bold', color: "#ff7043" }}><Icon name="sign-out" size={16} color="#ff7043" /> Log Out</Text>
@@ -103,14 +144,20 @@ export default function AppNavigation({ initialData,startApp }) {
                             </View>
                         </View>
                     </View>
+
                 </SafeAreaView>
+
             </View>
+
         )} initialRouteName="calendar">
+
             <Drawer.Screen name="calendar" options={{ drawerIcon: () => <Icon name="calendar" size={30} color="#4a0072" />, drawerLabel: "Takvim", title: "Takvim" }} component={CalendarScreen} />
-            <Drawer.Screen name="rapor" options={{ drawerIcon: () => <Icon name="file" size={30} color="#AD1457" />, drawerLabel: "Rapor", title: "Rapor" }} component={FromsScreen} />
+
+            <Drawer.Screen name="rapor" options={{ drawerIcon: () => <Icon name="file" size={30} color="#AD1457" />, drawerLabel: "Fromlar", title: "Formlar" }} component={FromsScreen} />
             <Drawer.Screen name="izinler" options={{ drawerIcon: () => <Icon name="map" size={30} color="#FF6F00" />, drawerLabel: "İzinler", title: "İzinler" }} component={YillikIzinScreen} />
             <Drawer.Screen name="fatura" options={{ drawerIcon: () => <Icon name="check" size={30} color="#33691E" />, drawerLabel: "Fatura", title: "Fatura" }} component={InvoicesScreen} />
             <Drawer.Screen name="avans" options={{ drawerIcon: () => <Icon name="money" size={30} color="#1A237E" />, drawerLabel: "Avans", title: "Avans" }} component={AvansScreen} />
+
 
         </Drawer.Navigator>)
     }
@@ -119,7 +166,9 @@ export default function AppNavigation({ initialData,startApp }) {
             <NavigationContainer>
                 <AppStack.Navigator initialRouteName="Geri">
                     <AppStack.Screen name="Geri" options={{ headerShown: false }} component={MyDrawer} />
-                    <AppStack.Screen name="FormDetail" options={{title:"From Detayı"}}  component={FormDetailScreen} />
+                    <AppStack.Screen name="FormDetail" options={{ title: "From Detayı" }} component={FormDetailScreen} />
+                    <AppStack.Screen name="rapor" options={{ title: "Formlar" }} component={FormsScreen} />
+
                 </AppStack.Navigator>
             </NavigationContainer>
         </Provider>

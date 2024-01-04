@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Alert, Button, FlatList, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Button, Dimensions, FlatList, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { apiConstant } from '../apiCrud/apiConstant';
 import { GetAxios, PostAxios } from '../apiCrud/crud';
 import InvoiceFlat from '../components/InfoiceFlat';
@@ -34,6 +34,7 @@ function FormsScreen(props) {
     const [projectName, setProjectNAme] = useState();
     const [groupModal, setGroupModal] = useState(false);
     const [selectedTopicId, setSelectedTopicId] = useState(false);
+    const [groupId, setGroupId] = useState();
 
 
     useEffect(() => { getAllData() }, [])
@@ -106,27 +107,33 @@ function FormsScreen(props) {
             //  setPageNumber(1)
             setListData([])
         }
+        setGroupId(props.route.params.groupId)
         setTransData(true)
         setDataLoading(true)
 
         var cprop = await GetAxios(apiConstant.BaseUrl + "/api/Company/GetCompanyType").then(x => { return x.data }).catch(x => { return x });
         setCompanyType(cprop.data)
 
+
+        
+
         var ctype = await GetAxios(apiConstant.BaseUrl + "/api/companytype/GetMultiCompanyType").then(x => { return x.data }).catch(x => { return x });
         setMultyCompanyType(ctype.data)
 
         var d = []
         if (isPageLoadData == false) {
-            d = await PostAxios(apiConstant.BaseUrl + "/api/Company/GetByCurrentUserPager", {
+            d = await PostAxios(apiConstant.BaseUrl + "/api/Company/GetByCurrentUserandfromTypeIdPager", {
                 "pageNumber": first == true ? 1 : pageNumber + 1,
                 "pageSize": 10,
+                "typeId":props.route.params.groupId
 
             }).then(x => { return x.data }).catch(x => { return x });
         } else {
 
-            d = await PostAxios(apiConstant.BaseUrl + "/api/Company/GetByCurrentUserPager", {
+            d = await PostAxios(apiConstant.BaseUrl + "/api/Company/GetByCurrentUserandfromTypeIdPager", {
                 pageNumber: first == true ? 1 : pageNumber + 1,
                 pageSize: 10,
+                typeId:props.route.params.groupId
 
             }).then(x => { return x.data }).catch(x => { return x });
         }
@@ -172,10 +179,11 @@ function FormsScreen(props) {
 
         </View>
 
-        <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+        <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center",maxHeight:Dimensions.get("window").height-300 }}>
 
 
             <FlatList
+            
                 data={listData}
                 renderItem={({ item }) => <FromFlat deleteData={deleteData} setDetailShow={setDetailShow} setDetailItem={setDetailItem} key={item.id} item={item} prp={props} />}
                 horizontal={false}
@@ -190,7 +198,7 @@ function FormsScreen(props) {
                         if (transData == false) {
 
                             if (pageNumber != totalData) {
-                                alert("fds")
+                               
                                 getAllData(false)
                             }
                         }
