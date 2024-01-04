@@ -14,6 +14,8 @@ function FormDetailScreen(props) {
     const [properties, setProperties] = useState([]);
     const [hideLabel, setHideLabel] = useState();
     const [loading, setLoading] = useState(false);
+    const [topicStatic, setTopicStatic] = useState(false);
+    const [isCompanyBaseGroup, setCompanyBaseGroup] = useState(false);
 
 
     useEffect(() => {
@@ -27,12 +29,19 @@ function FormDetailScreen(props) {
             var d = await GetAxios(apiConstant.BaseUrl + "/api/Company/GetFullDataCompanyById/" + props.route.params.id).then(x => { return x.data }).catch(x => { return x });
   
             setLoadingContent(false);
-            setCompany(d.data)
+            setCompany(d.data.companyData)
+            setTopicStatic(d.data.topicStatic)
+            setCompanyBaseGroup(d.data.companyData.companyBaseGroup)
             getProperty("1") 
  
     }
 
+    const changeTopic = async (type,value) => {
+        if (isCompanyBaseGroup) {
+            var d = await PostAxios(apiConstant.BaseUrl + "/api/Company/changeTopic",{ value: value, fieldType: type, topicId: topicStatic.id }).then(x => { return x.data }).catch(x => { return x });
 
+        }
+    }
     const getProperty = async (property) => {
        
        
@@ -98,7 +107,7 @@ function FormDetailScreen(props) {
 
 
                 <View >
-                    <CompanyProperty companyType={props.route.params.companyType}  companyName={props.route.params.companyName} companyId={props.route.params.id}  setListProperty={setListProperty} hideLabel={hideLabel} setHideLabel={setHideLabel} setProperty={setProperty} properties={properties}></CompanyProperty>
+                    <CompanyProperty changeTopic={changeTopic} companyType={props.route.params.companyType}  companyName={props.route.params.companyName} companyId={props.route.params.id}  setListProperty={setListProperty} hideLabel={hideLabel} setHideLabel={setHideLabel} setProperty={setProperty} properties={properties}></CompanyProperty>
 
                 </View>
 

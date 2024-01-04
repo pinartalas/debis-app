@@ -35,9 +35,10 @@ function FormsScreen(props) {
     const [groupModal, setGroupModal] = useState(false);
     const [selectedTopicId, setSelectedTopicId] = useState(false);
     const [groupId, setGroupId] = useState();
+    const [formGroup, setFormGroup] = useState();
 
 
-    useEffect(() => { getAllData() }, [])
+    useEffect(() => { getAllData() }, [props.route.params])
     const create = async () => {
         var cprop = await PostAxios(apiConstant.BaseUrl + "/api/Company/Create", formCreateModel).then(x => { return x.data }).catch(x => { return x });
 
@@ -103,6 +104,7 @@ function FormsScreen(props) {
         setSelectedMultiType(selectedValues)
     }
     const getAllData = async (first = true) => {
+        setPageNumber(1)
         if (first === true) {
             //  setPageNumber(1)
             setListData([])
@@ -111,13 +113,14 @@ function FormsScreen(props) {
         setTransData(true)
         setDataLoading(true)
 
-        var cprop = await GetAxios(apiConstant.BaseUrl + "/api/Company/GetCompanyType").then(x => { return x.data }).catch(x => { return x });
+        var cprop = await GetAxios(apiConstant.BaseUrl + "/api/Company/GetCompanyTypebyGroupId/" + props.route.params.groupId).then(x => { return x.data }).catch(x => { return x });
         setCompanyType(cprop.data)
 
+        var frmGroup = await GetAxios(apiConstant.BaseUrl + "/api/CompanyGroup/getbyId/" + props.route.params.groupId).then(x => { return x.data }).catch(x => { return x });
+        setFormGroup(frmGroup.data)
 
-        
 
-        var ctype = await GetAxios(apiConstant.BaseUrl + "/api/companytype/GetMultiCompanyType").then(x => { return x.data }).catch(x => { return x });
+        var ctype = await GetAxios(apiConstant.BaseUrl + "/api/companytype/GetMultiCompanyTypeGroup/" + props.route.params.groupId).then(x => { return x.data }).catch(x => { return x });
         setMultyCompanyType(ctype.data)
 
         var d = []
@@ -125,7 +128,7 @@ function FormsScreen(props) {
             d = await PostAxios(apiConstant.BaseUrl + "/api/Company/GetByCurrentUserandfromTypeIdPager", {
                 "pageNumber": first == true ? 1 : pageNumber + 1,
                 "pageSize": 10,
-                "typeId":props.route.params.groupId
+                "typeId": props.route.params.groupId
 
             }).then(x => { return x.data }).catch(x => { return x });
         } else {
@@ -133,7 +136,7 @@ function FormsScreen(props) {
             d = await PostAxios(apiConstant.BaseUrl + "/api/Company/GetByCurrentUserandfromTypeIdPager", {
                 pageNumber: first == true ? 1 : pageNumber + 1,
                 pageSize: 10,
-                typeId:props.route.params.groupId
+                typeId: props.route.params.groupId
 
             }).then(x => { return x.data }).catch(x => { return x });
         }
@@ -172,34 +175,41 @@ function FormsScreen(props) {
             contentSize.height - paddingToBottom;
     };
     return (<>
-        <View style={{ flexDirection: "row", justifyContent: "center" }}>
+        <View style={{ marginBottom: 10, borderBottomColor: "#42A5F5", borderBottomWidth: 1, borderStyle: "solid", backgroundColor: "#E3F2FD", flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
+            <View >
+                <Text style={{ fontWeight: "bold", color: "#1565C0" }}>
+                    {formGroup?.name}
+                </Text>
+                <Text>
+                    Form Listesi
+                </Text>
+            </View>
             <TouchableOpacity onPress={() => setDetailShow(true)} style={{ backgroundColor: "#1565C0", padding: 10, marginTop: 10, marginBottom: 10 }}>
                 <Text style={{ color: "white" }}>Yeni Form</Text>
             </TouchableOpacity>
 
         </View>
 
-        <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center",maxHeight:Dimensions.get("window").height-300 }}>
+        <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", maxHeight: Dimensions.get("window").height - 250 }}>
 
 
             <FlatList
-            
+
                 data={listData}
                 renderItem={({ item }) => <FromFlat deleteData={deleteData} setDetailShow={setDetailShow} setDetailItem={setDetailItem} key={item.id} item={item} prp={props} />}
                 horizontal={false}
                 keyExtractor={item => item.id}
-                ListEmptyComponent={dataLoading && <View style={{ justifyContent: "center", flexDirection: "row" }}><Loading></Loading></View>}
 
                 numColumns={1}
-                onScroll={({ nativeEvent }) => {
+                onScroll={async ({ nativeEvent }) => {
 
                     if (scrollBottom(nativeEvent)) {
 
                         if (transData == false) {
-
+                            console.log(pageNumber + "--" + totalData)
                             if (pageNumber != totalData) {
-                               
-                                getAllData(false)
+                                setDataLoading(true)
+                                await getAllData(false)
                             }
                         }
                     }
@@ -207,25 +217,33 @@ function FormsScreen(props) {
             />
 
 
-
-
+           
         </View>
+        {dataLoading && <View style={{ justifyContent: "center", flexDirection: "row" }}><Loading></Loading></View>
+            }
         {detailShow && <View style={{ borderRadius: 10, padding: 5, justifyContent: "flex-start", alignItems: "center", position: "absolute", backgroundColor: "white", height: "100%" }}>
 
             <View >
                 <SafeAreaView>
                     <View style={{ maxHeight: 400, width: "100%" }}>
                         <View style={isMultiCompanyType && { backgroundColor: "#C8E6C9" } || { backgroundColor: "#EFEBE9" }}>
+                            <View style={{ marginTop: 5 }}>
+                                <Text style={{ color: "#1565C0", textAlign: "center", fontSize: 18, fontWeight: "bold" }}>
+                                    {formGroup?.name}
+                                </Text>
+                            </View>
                             <View style={{ flexDirection: "row", alignItems: "center", margin: 10 }}>
                                 <Text style={{ fontWeight: "bold", marginRight: 10, fontSize: 16 }}>Çoklu Form</Text>
                                 <Switch value={isMultiCompanyType} onValueChange={(x) => { ; setIsMultyCompanyType(x) }}></Switch>
                             </View>
+
                         </View>
 
                         {!isMultiCompanyType && <>
 
 
                             <View style={{ flexDirection: "column", marginTop: 10 }}>
+
                                 <Text style={{ fontWeight: "bold", fontSize: 16 }}> Form Türü </Text>
                                 <SearchableDropDown
                                     onItemSelect={(item) => {
@@ -410,7 +428,7 @@ function FormsScreen(props) {
                                             inputStyles={{ width: 90, height: 21 }}
                                         />
                                     </View>
-                                
+
 
 
 

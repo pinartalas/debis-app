@@ -57,7 +57,7 @@ export default function AppNavigation({ initialData, startApp }) {
 
     const getGruop = async () => {
         var cprop = await GetAxios(apiConstant.BaseUrl + "/api/CompanyGroup/getAll").then(x => { return x.data }).catch(x => { return x });
-        
+        setCompanyGroup(cprop.data)
     }
     const translateAnimation = translateValue.interpolate({
         inputRange: [INPUT_RANGE_START, INPUT_RANGE_END],
@@ -125,9 +125,19 @@ export default function AppNavigation({ initialData, startApp }) {
                                 {formDorpdown && <View style={{ flexDirection: "column",paddingTop:20}}>
                                     {
                                         companyGroup?.map((item,key)=>{
-                                            return <TouchableOpacity onPress={()=>props.navigation.navigate("rapor",{groupId:item.id})} key={key} style={{paddingBottom:13,paddingTop:13, marginTop:5,marginBottom:5,paddingLeft:25}}>
+                                           
+                                            return <TouchableOpacity  onPress={()=>props.navigation.navigate("rapor",{groupId:item.id})} key={key} 
+                                            style={{paddingBottom:13,
+                                                paddingTop:13, 
+                                                marginTop:5,
+                                                marginBottom:5,
+                                            paddingLeft:25,
+                                            borderBottomColor:"black",
+                                            borderBottomWidth:1,
+                                            borderStyle:"solid"
+                                            }}>
                                                 <Text>
-                                                   <Icon name='arrow-right'></Icon> {item.name}
+                                                   <Icon style={{marginRight:10}} name='arrow-right'></Icon> {item.name}
                                                 </Text>
                                             </TouchableOpacity>
                                         })
