@@ -204,8 +204,8 @@ export default function CompanyProperty({ changeTopic, companyName, companyType,
                                                 textInputProps={
                                                     {
                                                         defaultValue: valueById.find(x => { return x.id == item.id })?.value,
-                                                        placeholder: "Firma Seç",
-                                                        underlineColorAndroid: "Firma Seç",
+                                                        placeholder: "Seç",
+                                                        underlineColorAndroid: "Seç",
                                                         style: {
                                                             padding: 12,
                                                             borderWidth: 1,
@@ -266,8 +266,8 @@ export default function CompanyProperty({ changeTopic, companyName, companyType,
                                                 textInputProps={
                                                     {
                                                         defaultValue: valueById.find(x => { return x.id == item.id })?.value,
-                                                        placeholder: "Firma Seç",
-                                                        underlineColorAndroid: "Firma Seç",
+                                                        placeholder: "Seç",
+                                                        underlineColorAndroid: "Seç",
                                                         style: {
                                                             padding: 12,
                                                             borderWidth: 1,
@@ -349,8 +349,8 @@ export default function CompanyProperty({ changeTopic, companyName, companyType,
                                                 textInputProps={
                                                     {
                                                         defaultValue: valueById.find(x => { return x.id == item.id })?.value,
-                                                        placeholder: "Firma Seç",
-                                                        underlineColorAndroid: "Firma Seç",
+                                                        placeholder: "Seç",
+                                                        underlineColorAndroid: "Seç",
                                                         style: {
                                                             padding: 12,
                                                             borderWidth: 1,
@@ -455,8 +455,8 @@ export default function CompanyProperty({ changeTopic, companyName, companyType,
                                                 textInputProps={
                                                     {
                                                         defaultValue: valueById.find(x => { return x.id == item.id })?.value,
-                                                        placeholder: "Firma Seç",
-                                                        underlineColorAndroid: "Firma Seç",
+                                                        placeholder: "Seç",
+                                                        underlineColorAndroid: "Seç",
                                                         style: {
                                                             padding: 12,
                                                             borderWidth: 1,
