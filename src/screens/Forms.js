@@ -69,7 +69,7 @@ function FormsScreen(props) {
             if (d.isError) {
                 alert(d.message)
             } else {
-
+                getAllData();
                 alert("Kayıt Başarılı")
 
             }
@@ -206,7 +206,7 @@ function FormsScreen(props) {
                     if (scrollBottom(nativeEvent)) {
 
                         if (transData == false) {
-                            console.log(pageNumber + "--" + totalData)
+                         
                             if (pageNumber != totalData) {
                                 setDataLoading(true)
                                 await getAllData(false)
@@ -225,7 +225,7 @@ function FormsScreen(props) {
 
             <View >
                 <SafeAreaView>
-                    <View style={{ maxHeight: 400, width: "100%" }}>
+                    <View style={{ mwidth: "100%" }}>
                         <View style={isMultiCompanyType && { backgroundColor: "#C8E6C9" } || { backgroundColor: "#EFEBE9" }}>
                             <View style={{ marginTop: 5 }}>
                                 <Text style={{ color: "#1565C0", textAlign: "center", fontSize: 18, fontWeight: "bold" }}>
@@ -309,7 +309,7 @@ function FormsScreen(props) {
                             </View>
                         </>}
                         {
-                            isMultiCompanyType && <View>
+                            isMultiCompanyType && <View style={{marginTop:20}}>
                                 <SearchableDropDown
                                     onItemSelect={(item) => {
 
@@ -402,13 +402,14 @@ function FormsScreen(props) {
 
                             </View>
                         }
-                        {isMultiCompanyType && <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }}>
+                        {isMultiCompanyType && <ScrollView style={{ flexDirection: "column", flexWrap: "wrap",
+                        marginTop:20,height:(Dimensions.get("screen").height-480),backgroundColor:"#CFD8DC",padding:15}}>
                             {multyCompanyType.map((item, key) => {
                                 var selectedValues = selectedMultiType.find(x => { return x.id == item.id })
 
-                                return <View key={key} style={{ width: "47%", marginBottom: 10 }}>
+                                return <View key={key} style={{ width: "100%", marginBottom: 10, flexDirection:"row",flex:1}}>
 
-                                    <View>
+                                    <View style={{width:"100%"}}>
 
                                         <FloatingLabelInput
                                             label={item.name + " Adet"}
@@ -434,11 +435,11 @@ function FormsScreen(props) {
 
                                 </View>
                             })}
-                        </View>}
+                        </ScrollView>}
                     </View>
 
 
-                    {!isMultiCompanyType && <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-evenly", marginTop: 30, paddingBottom: 5 }}>
+                    {!isMultiCompanyType && <View style={{ backgroundColor:"#E0F7FA",paddingTop:20,paddingBottom: 15,width: "100%", flexDirection: "row", justifyContent: "space-evenly", marginTop: 30}}>
                         <TouchableOpacity onPress={() => {
                             if (!formCreateModel.name || !formCreateModel.companyTypeId) {
                                 alert("Kayıt Yapılmadı. Gösterilen Alanları Doldurun")
@@ -452,7 +453,7 @@ function FormsScreen(props) {
                         }} style={{ backgroundColor: "red", width: 100, justifyContent: "center" }}><Text style={{ textAlign: "center", color: "white", fontWeight: "bold", fontSize: 16, padding: 8 }}>Vazgeç</Text></TouchableOpacity>
 
                     </View>}
-                    {isMultiCompanyType && <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-evenly", marginTop: 30, paddingBottom: 5 }}>
+                    {isMultiCompanyType && <View style={{ width: "100%",backgroundColor:"#E0F7FA",paddingTop:20,paddingBottom: 15, flexDirection: "row", justifyContent: "space-evenly", marginTop: 30,  }}>
                         <TouchableOpacity onPress={() => {
                             if (!selectedCustomer || !projectName) {
                                 alert("Kayıt Yapılmadı. Gösterilen Alanları Doldurun")

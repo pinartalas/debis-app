@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 
 
 
-import { Text, View, TextInput, ScrollView, Button, Image, TouchableOpacity, Dimensions, SafeAreaView } from 'react-native';
+import { Text, View, TextInput, ScrollView, Button, Image, TouchableOpacity, Dimensions, SafeAreaView, Platform } from 'react-native';
 import { FloatingLabelInput } from 'react-native-floating-label-input';
 import { FlatList, Switch } from 'react-native-gesture-handler';
 import * as ImagePicker from 'expo-image-picker';
@@ -13,8 +13,8 @@ import Loading from './loading';
 import SearchableDropDown from 'react-native-searchable-dropdown';
 import DatePicker from './DatePicker';
 import moment from 'moment';
-
-
+import RNPickerSelect from 'react-native-picker-select';
+import Icon from "react-native-vector-icons/FontAwesome";
 export default function CompanyProperty({ changeTopic, companyName, companyType, companyId, setHideLabel, setProperty, properties = [], hideLabel, setListProperty, formName }) {
 
     const [refresh, setRefresh] = useState()
@@ -90,7 +90,7 @@ export default function CompanyProperty({ changeTopic, companyName, companyType,
 
         }).then(x => { return x.data }).catch(x => { return x });
         setLoading(false)
-        console.log(d)
+
     };
     useEffect(() => {
 
@@ -117,428 +117,427 @@ export default function CompanyProperty({ changeTopic, companyName, companyType,
 
             </View>
 
+            <View style={{ flex: 6, paddingTop: 15, paddingRight: 15, paddingLeft: 10 }}>
+                <FlatList
+                    keyboardShouldPersistTaps="always"
+                    style={{ backgroundColor: "#ECEFF1" }}
+                    data={properties}
+                    
+                    renderItem={({ item }) => {
 
-            <View style={{ flex: 7, backgroundColor: "#ECEFF1" }}>
-                <FlatList style={{ paddingTop: 20, paddingLeft: 15, paddingRight: 10, maxHeight: 700 }}
-                    data={["s"]}
-                    renderItem={
-                        () =>
-                            properties.map((item, key) => {
-
-                                if (item.companyPropertyValueType == 1) {
-                                    return (<View key={key} >
-
-                                        <View style={{ position: "relative", marginBottom: 10 }}>
-                                            <FloatingLabelInput
-                                                label={item.key}
-                                                inputMode="text"
-                                                value={valueById.find(x => { return x.id == item.id })?.value}
-                                                onChangeText={(val) => { changeVal(val, item.id, false); setHideLabel(); }}
-                                            />
-                                        </View>
-                                    </View>)
-                                }
-
-
-                                if (item.companyPropertyValueType == 2) {
-                                    return <View key={key} style={{ marginBottom: 10 }} >
-                                        <View style={{ position: "relative" }}>
-
-                                            <FloatingLabelInput
-                                                label={item.key}
-                                                inputMode="numeric"
-                                            
-                                                value={valueById.find(x => { return x.id == item.id })?.value}
-                                                onChangeText={(val) => { changeVal(val, item.id, false); setHideLabel(); }}
-                                            />
-
-                                        </View>
+                        if (item.companyPropertyValueType === 1) {
+                            return (
+                                <View key={item.id}>
+                                    <View style={{ position: "relative", marginBottom: 10 }}>
+                                        <FloatingLabelInput
+                                            label={item.key}
+                                            inputMode="text"
+                                            value={valueById.find((x) => x.id === item.id)?.value}
+                                            onChangeText={(val) => {
+                                                changeVal(val, item.id, false);
+                                                setHideLabel();
+                                            }}
+                                        />
                                     </View>
-                                }
+                                </View>
+                            );
+                        }
 
-
-                                if (item.companyPropertyValueType == 7) {
-                                    return <View key={key} >
-                                        <View style={{ position: "relative", flexDirection: "row", alignItems: "center", marginBottom: 20, marginTop: 10 }}>
-                                            <Text style={{ marginRight: 10, fontWeight: "bold", fontSize: 14 }}>{item.key}</Text>
-                                            {/* <Text>{moment(new Date(valueById.find(x => { return x.id == item.id })?.value)).format("yyyy-DD-MM")}</Text> */}
-                                            <DatePicker value={valueById.find(x => { return x.id == item.id })?.value && new Date(valueById.find(x => { return x.id == item.id })?.value) || new Date()} onChange={(e, d) => { changeVal(d, item.id, false); setHideLabel(); }}>
-
-                                            </DatePicker>
-
-                                        </View>
+                        if (item.companyPropertyValueType === 2) {
+                            return (
+                                <View key={item.id} style={{ marginBottom: 10 }}>
+                                    <View style={{ position: "relative" }}>
+                                        <FloatingLabelInput
+                                            label={item.key}
+                                            inputMode="numeric"
+                                            value={valueById.find((x) => x.id === item.id)?.value}
+                                            onChangeText={(val) => {
+                                                changeVal(val, item.id, false);
+                                                setHideLabel();
+                                            }}
+                                        />
                                     </View>
-                                }
+                                </View>
+                            );
+                        }
 
-                                if (item.companyPropertyValueType == 5) {
-                                    return <SafeAreaView key={key} >
-                                        <Text > {item.key}</Text>
-                                        <View style={{ position: "relative", paddingBottom: 25 }}>
+                        if (item.companyPropertyValueType === 7) {
+                            return (
+                                <View key={item.id}>
+                                    <View
+                                        style={{
+                                            position: "relative",
+                                            flexDirection: "row",
+                                            alignItems: "center",
+                                            marginBottom: 20,
+                                            marginTop: 10,
+                                        }}
+                                    >
+                                        <Text style={{ marginRight: 10, fontWeight: "bold", fontSize: 14 }}>
+                                            {item.key}
+                                        </Text>
+                                        <DatePicker
+                                            value={
+                                                (valueById.find((x) => x.id === item.id)?.value &&
+                                                    new Date(valueById.find((x) => x.id === item.id)?.value)) ||
+                                                new Date()
+                                            }
+                                            onChange={(e, d) => {
+                                                changeVal(d, item.id, false);
+                                                setHideLabel();
+                                            }}
+                                        ></DatePicker>
+                                    </View>
+                                </View>
+                            );
+                        }
 
-                                            <SearchableDropDown
-                                                onItemSelect={(itm) => {
-                                                
-                                                    changeVal(itm.name, item.id, false); setHideLabel();
-                                                }}
-                                                containerStyle={{ padding: 5 }}
-                                                itemStyle={{
-                                                    padding: 10,
-                                                    marginTop: 2,
-                                                    backgroundColor: '#ddd',
-                                                    borderColor: '#bbb',
+                        if (item.companyPropertyValueType === 5) {
+                            return (
+                                <SafeAreaView key={item.id}>
+                                    <Text> {item.key}</Text>
+                                    <View
+                                        style={{
+                                            position: "relative",
+                                            borderColor: "#B0BEC5",
+                                            borderWidth: 1,
+                                            borderStyle: "solid",
+                                            marginTop: 10,
+                                            marginBottom: 20,
+
+
+
+                                        }}
+                                    >
+
+                                        {Platform.OS == "android" && <RNPickerSelect
+                                            onValueChange={(itm) => {
+
+                                                changeVal(itm, item.id, false);
+                                                setHideLabel();
+                                            }}
+                                            items={item?.propertySelectLists.map((jitem) => {
+                                                return { value: jitem.item, label: jitem.item };
+                                            })}
+
+                                            value={valueById.find((x) => x.id === item.id)?.value}
+
+
+                                            placeholder={{ value: null, label: "Seçiniz" }}
+                                        />}
+                                        {Platform.OS == "ios" && <RNPickerSelect
+                                            onValueChange={(itm) => {
+
+                                                changeVal(itm, item.id, false);
+                                                setHideLabel();
+                                            }}
+                                            Icon={() => <Icon size={15} style={{ marginRight: 10 }} color={"black"} name='chevron-down'></Icon>}
+                                            style={{ viewContainer: { height: 40, justifyContent: "center", paddingLeft: 10 } }}
+                                            items={item?.propertySelectLists.map((jitem) => {
+                                                return { value: jitem.item, label: jitem.item };
+                                            })}
+
+                                            value={valueById.find((x) => x.id === item.id)?.value}
+
+
+                                            placeholder={{ value: null, label: "Seçiniz" }}
+                                        />}
+
+                                    </View>
+                                </SafeAreaView>
+                            );
+                        }
+
+                        if (item.companyPropertyValueType === 8) {
+                            return (
+                                <View key={item.id}>
+                                    <Text> {item.key}</Text>
+                                    <View style={{ position: "relative", paddingBottom: 30 }}>
+                                        <SearchableDropDown
+                                            onItemSelect={(itm) => {
+                                                changeVal(itm.name, item.id, false);
+                                                setHideLabel();
+                                            }}
+                                            containerStyle={{ padding: 5 }}
+                                            itemStyle={{
+                                                padding: 10,
+                                                marginTop: 2,
+                                                backgroundColor: "#ddd",
+                                                borderColor: "#bbb",
+                                                borderWidth: 1,
+                                                borderRadius: 5,
+                                            }}
+                                            selectedItems={[
+                                                {
+                                                    name: valueById.find((x) => x.id === item.id)?.value,
+                                                    id: valueById.find((x) => x.id === item.id)?.value,
+                                                },
+                                            ]}
+                                            itemTextStyle={{ color: "#222" }}
+                                            itemsContainerStyle={{ maxHeight: 140 }}
+                                            items={personelList}
+                                            textInputProps={{
+                                                defaultValue: valueById.find((x) => x.id === item.id)?.value,
+                                                placeholder: "Seç",
+                                                underlineColorAndroid: "Seç",
+                                                style: {
+                                                    padding: 12,
                                                     borderWidth: 1,
+                                                    borderColor: "#ccc",
                                                     borderRadius: 5,
-                                                }}
-                                                multi={true}
-                                                selectedItems={
-                                                    {
-                                                        name: valueById.find(x => { return x.id == item.id })?.value, id: valueById.find(x => { return x.id == item.id })?.value
+                                                },
+                                                onTextChange: (text) => {
+                                                    if (text?.length >= 2) {
+                                                        getPersonByName(text);
                                                     }
-                                                }
-
-
-                                                itemTextStyle={{ color: '#222' }}
-                                                itemsContainerStyle={{ maxHeight: 140 }}
-                                                items={item?.propertySelectLists.map((jitem, jkey) => { return { name: jitem.item, id: jitem.item } })}
-
-                                                textInputProps={
-                                                    {
-                                                        defaultValue: valueById.find(x => { return x.id == item.id })?.value,
-                                                        placeholder: "Seç",
-                                                        underlineColorAndroid: "Seç",
-                                                        style: {
-                                                            padding: 12,
-                                                            borderWidth: 1,
-                                                            borderColor: '#ccc',
-                                                            borderRadius: 5,
-                                                        },
-                                                        onTextChange: text => {
-                                                            // if (text.length >= 2) {
-                                                            //     getCustomerByName(text);
-                                                            // }
-                                                        }
-                                                    }
-                                                }
-                                                listProps={
-                                                    {
-                                                        nestedScrollEnabled: false,
-                                                    }
-                                                }
-                                            />
-
-
-                                        </View>
-                                    </SafeAreaView>
-                                }
-
-
-                                if (item.companyPropertyValueType == 8) {
-                                    return <View key={key} >
-                                        <Text > {item.key}</Text>
-                                        <View style={{ position: "relative", paddingBottom: 20 }}>
-
-                                            <SearchableDropDown
-                                                onItemSelect={(itm) => {
-
-                                                    changeVal(itm.name, item.id, false); setHideLabel();
-                                                }}
-                                                containerStyle={{ padding: 5 }}
-                                                itemStyle={{
-                                                    padding: 10,
-                                                    marginTop: 2,
-                                                    backgroundColor: '#ddd',
-                                                    borderColor: '#bbb',
-                                                    borderWidth: 1,
-                                                    borderRadius: 5,
-                                                }}
-                                                multi={true}
-                                                selectedItems={
-                                                    {
-                                                        name: valueById.find(x => { return x.id == item.id })?.value, id: valueById.find(x => { return x.id == item.id })?.value
-                                                    }
-                                                }
-
-
-                                                itemTextStyle={{ color: '#222' }}
-                                                itemsContainerStyle={{ maxHeight: 140 }}
-                                                items={personelList}
-
-                                                textInputProps={
-                                                    {
-                                                        defaultValue: valueById.find(x => { return x.id == item.id })?.value,
-                                                        placeholder: "Seç",
-                                                        underlineColorAndroid: "Seç",
-                                                        style: {
-                                                            padding: 12,
-                                                            borderWidth: 1,
-                                                            borderColor: '#ccc',
-                                                            borderRadius: 5,
-                                                        },
-                                                        onTextChange: text => {
-                                                            if (text?.length >= 2) {
-                                                                getPersonByName(text);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                listProps={
-                                                    {
-                                                        nestedScrollEnabled: false,
-                                                    }
-                                                }
-                                            />
-
-
-                                        </View>
+                                                },
+                                            }}
+                                            listProps={{
+                                                nestedScrollEnabled: false,
+                                            }}
+                                        />
                                     </View>
-                                }
-                                if (item.companyPropertyValueType == 9) {
-                                    return <View key={key} style={{ marginBottom: 30 }}>
-                                        <Text > {item.key}</Text>
-                                      
-                                        <View style={{ position: "relative", paddingBottom: 20 }}>
+                                </View>
+                            );
+                        }
 
-                                            <SearchableDropDown
-                                                onItemSelect={(itm) => {
+                        if (item.companyPropertyValueType === 9) {
+                            return (
 
-                                                    changeVal(itm.name, item.id, false); 
-                                                    setHideLabel();
+                                <SafeAreaView key={item.id} style={{ marginBottom: 59 }}>
+                                    <Text> {item.key}</Text>
+                                    <View style={{ position: "relative", paddingBottom: 20 }}>
 
-                                                    var address = properties.find(x => { return x.companyPropertyValueType == 12 })
-                                                    var Phone = properties.find(x => { return x.companyPropertyValueType == 13 })
-                                                    var ePosta = properties.find(x => { return x.companyPropertyValueType == 14 })
 
-                                                    console.log(ePosta)
 
-                                                    changeTopic("customer", itm.name)
-                                                    let slc = allCustomerData?.find(x => { return x.name == itm.name });
 
-                                                    if (slc != undefined) {
-                                                        setSelectedCustomer(slc)
-                                                        changeTopic("customerEmail", slc.employerEmail)
-                                                        changeTopic("customerAddress", slc.address)
-                                                        changeTopic("customerTel", slc.employerTel)
 
-                                                        { address && changeVal(slc.address, address.id); }
-                                                        { Phone && changeVal(slc.employerTel, Phone.id); }
-                                                        { ePosta && changeVal(slc.employerEmail, ePosta.id); }
-                                                    }
-                                                    changeVal(itm.name, item.id, false); 
-                                                }}
-                                                containerStyle={{ padding: 5 }}
-                                                itemStyle={{
-                                                    padding: 10,
-                                                    marginTop: 2,
-                                                    backgroundColor: '#ddd',
-                                                    borderColor: '#bbb',
+                                        <SearchableDropDown
+                                            onItemSelect={(itm) => {
+                                                changeVal(itm.name, item.id, false);
+                                                setHideLabel();
+
+                                                var address = properties.find(
+                                                    (x) => x.companyPropertyValueType === 12
+                                                );
+                                                var Phone = properties.find(
+                                                    (x) => x.companyPropertyValueType === 13
+                                                );
+                                                var ePosta = properties.find(
+                                                    (x) => x.companyPropertyValueType === 14
+                                                );
+
+                                                changeTopic("customer", itm.name);
+                                                let slc = allCustomerData?.find((x) => x.name === itm.name);
+
+                                                if (slc !== undefined) {
+                                                    setSelectedCustomer(slc);
+                                                    changeTopic("customerEmail", slc.employerEmail);
+                                                    changeTopic("customerAddress", slc.address);
+                                                    changeTopic("customerTel", slc.employerTel);
+
+                                                    address && changeVal(slc.address, address.id);
+                                                    Phone && changeVal(slc.employerTel, Phone.id);
+                                                    ePosta && changeVal(slc.employerEmail, ePosta.id);
+                                                }
+                                                changeVal(itm.name, item.id, false);
+                                            }}
+                                            containerStyle={{ padding: 5 }}
+                                            itemStyle={{
+                                                padding: 10,
+                                                marginTop: 2,
+                                                backgroundColor: "#ddd",
+                                                borderColor: "#bbb",
+                                                borderWidth: 1,
+                                                borderRadius: 5,
+                                            }}
+
+                                            selectedItems={{
+                                                name: valueById.find((x) => x.id === item.id)?.value,
+                                                id: valueById.find((x) => x.id === item.id)?.value,
+                                            }}
+                                            itemTextStyle={{ color: "#222" }}
+                                            itemsContainerStyle={{ maxHeight: 140 }}
+                                            items={customerOption}
+                                            textInputProps={{
+                                                defaultValue: valueById.find((x) => x.id === item.id)?.value,
+                                                placeholder: "Seç",
+                                                underlineColorAndroid: "Seç",
+                                                style: {
+                                                    padding: 12,
                                                     borderWidth: 1,
+                                                    borderColor: "#ccc",
                                                     borderRadius: 5,
-                                                }}
-                                                multi={true}
-                                                selectedItems={
-                                                    {
-                                                        name: valueById.find(x => { return x.id == item.id })?.value, id: valueById.find(x => { return x.id == item.id })?.value
+                                                },
+                                                onTextChange: (text) => {
+                                                    if (text?.length >= 2) {
+                                                        getCustomerByName(text);
                                                     }
-                                                }
-
-
-                                                itemTextStyle={{ color: '#222' }}
-                                                itemsContainerStyle={{ maxHeight: 140 }}
-                                                items={customerOption}
-
-                                                textInputProps={
-                                                    {
-                                                        defaultValue: valueById.find(x => { return x.id == item.id })?.value,
-                                                        placeholder: "Seç",
-                                                        underlineColorAndroid: "Seç",
-                                                        style: {
-                                                            padding: 12,
-                                                            borderWidth: 1,
-                                                            borderColor: '#ccc',
-                                                            borderRadius: 5,
-                                                        },
-                                                        onTextChange: text => {
-                                                            if (text?.length >= 2) {
-                                                                getCustomerByName(text);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                listProps={
-                                                    {
-                                                        nestedScrollEnabled: false,
-                                                    }
-                                                }
-                                            />
-
-
-                                        </View>
-                                        {
-                                            selectedCustomer && <>
-
-                                                <View style={{ fontSize: 11, flexDirection: "row" }}>
-                                                    <Text style={{ fontWeight: "bold" }}>Adres: </Text>
-                                                    <Text>{selectedCustomer?.address || "-"}</Text>
-                                                </View>
-                                                <View style={{ fontSize: 11, flexDirection: "row" }}>
-                                                    <Text style={{ fontWeight: "bold" }}>Telefon: </Text>
-                                                    <Text>{selectedCustomer?.employerTel || "-"}</Text>
-                                                </View>
-                                                <View style={{ fontSize: 11, flexDirection: "row" }}>
-                                                    <Text style={{ fontWeight: "bold" }}>E-posta: </Text>
-                                                    <Text> {selectedCustomer?.employerEmail || "-"}</Text>
-
-                                                </View>
-                                            </>
-                                        }
-                                        {
-                                            !selectedCustomer &&
-
-                                            <>
-
-                                                <View style={{ fontSize: 11, flexDirection: "row" }}>
-                                                    <Text style={{ fontWeight: "bold" }}>Adres: </Text>
-                                                    <Text> {properties.find(x => { return x.companyPropertyValueType == 12 })?.companyPropertyValues?.value || "-"}
-                                                    </Text>
-                                                </View>
-                                                <View style={{ fontSize: 11, flexDirection: "row" }}>
-                                                    <Text style={{ fontWeight: "bold" }}>Telefon: </Text>
-                                                    <Text> {properties.find(x => { return x.companyPropertyValueType == 13 })?.companyPropertyValues?.value || "-"}</Text>
-                                                </View>
-                                                <View style={{ fontSize: 11, flexDirection: "row" }}>
-                                                    <Text style={{ fontWeight: "bold" }}>E-posta: </Text>
-                                                    <Text> {properties.find(x => { return x.companyPropertyValueType == 14 })?.companyPropertyValues?.value || "-"}</Text>
-                                                </View>
-                                            </>
-                                        }
+                                                },
+                                            }}
+                                            listProps={{
+                                                nestedScrollEnabled: false,
+                                            }}
+                                        />
                                     </View>
-                                }
-
-
-                                if (item.companyPropertyValueType == 10) {
-                                    let selectedCustomerProjct = selectedCustomer?.customerProjects?.map(x => { return { name: x.name, id: x.name } })
-
-
-                                    return <View key={key} style={{ marginBottom: 30 }}>
-                                        <Text > {item.key}</Text>
-                                        <View style={{ position: "relative", paddingBottom: 20 }}>
-
-                                            <SearchableDropDown
-                                                onItemSelect={(itm) => {
-
-                                                    changeVal(itm.name, item.id, false); setHideLabel();
-                                                    changeTopic("customerProject", itm.name)
-
-
-                                                }}
-                                                containerStyle={{ padding: 5 }}
-                                                itemStyle={{
-                                                    padding: 10,
-                                                    marginTop: 2,
-                                                    backgroundColor: '#ddd',
-                                                    borderColor: '#bbb',
-                                                    borderWidth: 1,
-                                                    borderRadius: 5,
-                                                }}
-                                                multi={true}
-                                                selectedItems={
-                                                    {
-                                                        name: valueById.find(x => { return x.id == item.id })?.value, id: valueById.find(x => { return x.id == item.id })?.value
-                                                    }
-                                                }
-
-
-                                                itemTextStyle={{ color: '#222' }}
-                                                itemsContainerStyle={{ maxHeight: 140 }}
-                                                items={selectedCustomerProjct}
-
-                                                textInputProps={
-                                                    {
-                                                        defaultValue: valueById.find(x => { return x.id == item.id })?.value,
-                                                        placeholder: "Seç",
-                                                        underlineColorAndroid: "Seç",
-                                                        style: {
-                                                            padding: 12,
-                                                            borderWidth: 1,
-                                                            borderColor: '#ccc',
-                                                            borderRadius: 5,
-                                                        },
-                                                        onTextChange: text => {
-                                                            if (text?.length >= 2) {
-                                                                // getCustomerByName(text);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                listProps={
-                                                    {
-                                                        nestedScrollEnabled: false,
-                                                    }
-                                                }
-                                            />
-
-
-                                        </View>
-
-                                    </View>
-                                }
-
-                                if (item.companyPropertyValueType == 4) {
-
-                                    return <View key={key} style={{ marginBottom: 10 }} >
-
-                                        <View style={{ position: "relative", marginBottom: 10 }}>
-                                            {/* <input type={"checkbox"} readOnly="readonly" onClick={() => { setHideLabel(item.id); document.getElementById(item.id).focus(); }} className={"form-control input-value-label " + (hideLabel == item.id && "hide-value-key")} checked={item.value}></input> */}
-                                            <View style={{ flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
-                                                <Text style={{ marginRight : 5 }}>
-                                                    {item.key}
-                                                </Text>
-                                                <Switch
-                                                    trackColor={{ false: 'red', true: 'green' }}
-                                                    thumbColor={false ? '#f5dd4b' : '#f4f3f4'}
-                                                    ios_backgroundColor="#3e3e3e"
-                                                    onValueChange={(val) => { changeVal(val, item.id, false); setHideLabel(); }}
-
-                                                    value={valueById.find(x => { return x.id == item.id })?.value == "True" ? true : valueById.find(x => { return x.id == item.id })?.value}
-                                                />
-
+                                    {selectedCustomer && (
+                                        <>
+                                            <View style={{ fontSize: 11, flexDirection: "row" }}>
+                                                <Text style={{ fontWeight: "bold" }}>Adres: </Text>
+                                                <Text>{selectedCustomer?.address || "-"}</Text>
                                             </View>
+                                            <View style={{ fontSize: 11, flexDirection: "row" }}>
+                                                <Text style={{ fontWeight: "bold" }}>Telefon: </Text>
+                                                <Text>{selectedCustomer?.employerTel || "-"}</Text>
+                                            </View>
+                                            <View style={{ fontSize: 11, flexDirection: "row" }}>
+                                                <Text style={{ fontWeight: "bold" }}>E-posta: </Text>
+                                                <Text> {selectedCustomer?.employerEmail || "-"}</Text>
+                                            </View>
+                                        </>
+                                    )}
+                                    {!selectedCustomer && (
+                                        <>
+                                            <View style={{ fontSize: 11, flexDirection: "row" }}>
+                                                <Text style={{ fontWeight: "bold" }}>Adres: </Text>
+                                                <Text>
+                                                    {" "}
+                                                    {properties.find((x) => x.companyPropertyValueType === 12)
+                                                        ?.companyPropertyValues?.value || "-"}
+                                                </Text>
+                                            </View>
+                                            <View style={{ fontSize: 11, flexDirection: "row" }}>
+                                                <Text style={{ fontWeight: "bold" }}>Telefon: </Text>
+                                                <Text>
+                                                    {" "}
+                                                    {properties.find((x) => x.companyPropertyValueType === 13)
+                                                        ?.companyPropertyValues?.value || "-"}
+                                                </Text>
+                                            </View>
+                                            <View style={{ fontSize: 11, flexDirection: "row" }}>
+                                                <Text style={{ fontWeight: "bold" }}>E-posta: </Text>
+                                                <Text>
+                                                    {" "}
+                                                    {properties.find((x) => x.companyPropertyValueType === 14)
+                                                        ?.companyPropertyValues?.value || "-"}
+                                                </Text>
+                                            </View>
+                                        </>
+                                    )}
+                                </SafeAreaView>
+                            );
+                        }
+
+                        if (item.companyPropertyValueType === 10) {
+                            let selectedCustomerProjct =
+                                selectedCustomer?.customerProjects?.map((x) => {
+                                    return { name: x.name, id: x.name };
+                                }) || [];
+
+                            return (
+                                <View key={item.id} >
+                                    <Text> {item.key}</Text>
+                                    <View style={{ position: "relative", paddingBottom: 30 }}>
+                                        <SearchableDropDown
+                                            onItemSelect={(itm) => {
+                                                changeVal(itm.name, item.id, false);
+                                                setHideLabel();
+                                                changeTopic("customerProject", itm.name);
+                                            }}
+                                            containerStyle={{ padding: 5 }}
+                                            itemStyle={{
+                                                padding: 10,
+                                                marginTop: 2,
+                                                backgroundColor: "#ddd",
+                                                borderColor: "#bbb",
+                                                borderWidth: 1,
+                                                borderRadius: 5,
+                                            }}
+                                          
+                                            selectedItems={{
+                                                name: valueById.find((x) => x.id === item.id)?.value,
+                                                id: valueById.find((x) => x.id === item.id)?.value,
+                                            }}
+                                            itemTextStyle={{ color: "#222" }}
+                                            itemsContainerStyle={{ maxHeight: 140 }}
+                                            items={selectedCustomerProjct}
+                                            textInputProps={{
+                                                defaultValue: valueById.find((x) => x.id === item.id)?.value,
+                                                placeholder: "Seç",
+                                                underlineColorAndroid: "Seç",
+                                                style: {
+                                                    padding: 12,
+                                                    borderWidth: 1,
+                                                    borderColor: "#ccc",
+                                                    borderRadius: 5,
+                                                },
+                                                onTextChange: (text) => {
+                                                    if (text?.length >= 2) {
+                                                        // getCustomerByName(text);
+                                                    }
+                                                },
+                                            }}
+                                            listProps={{
+                                                nestedScrollEnabled: false,
+                                            }}
+                                        />
+                                    </View>
+                                </View>
+                            );
+                        }
+
+                        if (item.companyPropertyValueType === 4) {
+                            return (
+                                <View key={item.id} style={{ marginBottom: 10 }}>
+                                    <View style={{ position: "relative", marginBottom: 10 }}>
+                                        <View style={{ flexDirection: "row", justifyContent: "flex-start", alignItems: "center" }}>
+                                            <Text style={{ marginRight: 5 }}>{item.key}</Text>
+                                            <Switch
+                                                trackColor={{ false: "red", true: "green" }}
+                                                thumbColor={false ? "#f5dd4b" : "#f4f3f4"}
+                                                ios_backgroundColor="#3e3e3e"
+                                                onValueChange={(val) => {
+                                                    changeVal(val, item.id, false);
+                                                    setHideLabel();
+                                                }}
+                                                value={valueById.find((x) => x.id === item.id)?.value === "True"}
+                                            />
                                         </View>
                                     </View>
-                                }
+                                </View>
+                            );
+                        }
 
-                                if (item.companyPropertyValueType == 6) {
-                                    return <View key={key} style={{
+                        if (item.companyPropertyValueType === 6) {
+                            return (
+                                <View
+                                    key={item.id}
+                                    style={{
                                         backgroundColor: "#B2DFDB",
                                         marginBottom: 10,
                                         padding: 10,
                                         borderColor: "#26A69A",
                                         borderWidth: 1,
-                                        borderStyle: "solid"
-                                    }}>
-                                        <Text style={{ fontWeight: "bold" }}>{item.key} </Text>
-                                        <View cla style={{ position: "relative" }}>
-
-
-                                            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                                                <Button title="Galeriden Resim Seç" onPress={() => pickImage(item.id)} />
-                                                {valueById.find(x => { return x.id == item.id })?.value && <Image source={{ uri: valueById.find(x => { return x.id == item.id })?.value }} style={{ width: 200, height: 200 }} />}
-                                            </View>
-
+                                        borderStyle: "solid",
+                                    }}
+                                >
+                                    <Text style={{ fontWeight: "bold" }}>{item.key} </Text>
+                                    <View cla style={{ position: "relative" }}>
+                                        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+                                            <Button title="Galeriden Resim Seç" onPress={() => pickImage(item.id)} />
+                                            {valueById.find((x) => x.id === item.id)?.value && (
+                                                <Image source={{ uri: valueById.find((x) => x.id === item.id)?.value }} style={{ width: 200, height: 200 }} />
+                                            )}
                                         </View>
                                     </View>
-                                }
+                                </View>
+                            );
+                        }
 
+                        return null; // Eğer yukarıdaki şartlardan hiçbiri sağlanmıyorsa null döndür
+                    }}
+                />
 
-                            })}
-
-                >
-
-
-                    <View style={{ height: 100, width: "100%", }}>
-
-                    </View>
-                </FlatList>
             </View>
             {loading && <View style={{ paddingTop: 50, position: "absolute", backgroundColor: "#ffffffc2", height: "100%", width: "100%", flexDirection: "column", alignItems: "center" }}>
                 <Loading height={50} width={50}></Loading>

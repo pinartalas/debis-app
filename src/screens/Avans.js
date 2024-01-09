@@ -29,7 +29,7 @@ function AvansScreen(props) {
 
     const avansGonder = async () => {
         var yill = await PostAxios(apiConstant.BaseUrl + "/api/DebisPersonel/MaasAvansCreate",avansData).then(x => { return x.data }).catch(x => { return x });
-      console.log(avansData)
+    
         if (yill.isError==false) {
             alert("Avans Talebi Gönderildi")
             setOpenCreate(false); 

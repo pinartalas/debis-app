@@ -361,7 +361,7 @@ function CalendarScreen(props) {
                                 </Picker>
                             </View>
                         </View>}
-                        {isCompanyView.customerSelect && <View style={{ flexDirection: "row", marginTop: 10, height: 80, overflow: "hidden", justifyContent: "center", alignItems: "center" }}>
+                        {isCompanyView?.customerSelect && <View style={{ flexDirection: "row", marginTop: 10, height: 80, overflow: "hidden", justifyContent: "center", alignItems: "center" }}>
 
                             <TouchableOpacity onPress={() => setFirmDialog(true)} style={{ backgroundColor: "#6A1B9A", padding: 15 }}>
                                 <Text style={{ fontWeight: "bold", color: "white" }}>Firma Proje/Şantiye Seç</Text>
@@ -380,8 +380,8 @@ function CalendarScreen(props) {
                 </View>
             </View>}
 
-            <Dialog visible={firmDialog} style={{ borderRadius: 10, padding: 5,flexDirection: "column" }}>
-                <View  >
+            <Dialog visible={firmDialog} style={{ borderRadius: 10, padding: 5,flexDirection: "column",backgroundColor:"white" }}>
+                <View style={{backgroundColor:"white"}} >
                     <Text style={{ fontWeight: "bold", fontSize: 18, color: "#1B5E20" }}>{"Firma Şantiye"}</Text>
 
 

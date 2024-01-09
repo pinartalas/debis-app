@@ -163,7 +163,7 @@ export default function AppNavigation({ initialData, startApp }) {
 
             <Drawer.Screen name="calendar" options={{ drawerIcon: () => <Icon name="calendar" size={30} color="#4a0072" />, drawerLabel: "Takvim", title: "Takvim" }} component={CalendarScreen} />
 
-            <Drawer.Screen name="rapor" options={{ drawerIcon: () => <Icon name="file" size={30} color="#AD1457" />, drawerLabel: "Fromlar", title: "Formlar" }} component={FromsScreen} />
+            {/* <Drawer.Screen name="rapor" options={{ drawerIcon: () => <Icon name="file" size={30} color="#AD1457" />, drawerLabel: "Fromlar", title: "Formlar" }} component={FromsScreen} /> */}
             <Drawer.Screen name="izinler" options={{ drawerIcon: () => <Icon name="map" size={30} color="#FF6F00" />, drawerLabel: "İzinler", title: "İzinler" }} component={YillikIzinScreen} />
             <Drawer.Screen name="fatura" options={{ drawerIcon: () => <Icon name="check" size={30} color="#33691E" />, drawerLabel: "Fatura", title: "Fatura" }} component={InvoicesScreen} />
             <Drawer.Screen name="avans" options={{ drawerIcon: () => <Icon name="money" size={30} color="#1A237E" />, drawerLabel: "Avans", title: "Avans" }} component={AvansScreen} />
