@@ -123,7 +123,7 @@ function CalendarScreen(props) {
 
         var rps = await PostAxios(url, { startDate: startDate, endDate: endDate }).then(x => { return x.data }).catch(x => { return undefined });
 
-        // console.log(rps.data)
+        console.log(rps.data)
         var eventList = []
         for (const item of rps.data) {
             eventList.push({ start: new Date(item.start), end: new Date(item.end), title: item.explanationText, backColor: item.color, company: item.companyName })
@@ -267,7 +267,7 @@ function CalendarScreen(props) {
 
                         <View style={{ flexDirection: "row", marginTop: 7, justifyContent: "center", alignItems: "center" }}>
                             <Text style={{ fontWeight: "bold" }}>Tarih </Text>
-                            <DatePicker value={new Date(requestData.startDate)} activeDate={activeDate} onChange={(e, d) => { setRequestData({ ...requestData, startDate: moment(d), endDate: moment(d) }); }}></DatePicker>
+                            <DatePicker value={new Date(requestData.startDate)} activeDate={requestData.startDate} onChange={(e, d) => { setRequestData({ ...requestData, startDate: moment(d), endDate: moment(d) }); }}></DatePicker>
 
 
 

@@ -83,11 +83,12 @@ export default function CompanyProperty({ changeTopic, companyName, companyType,
     };
 
     const save = async () => {
+        console.log(valueById)
         setLoading(true)
         var d = await PostAxios(apiConstant.BaseUrl + "/api/Company/SetPropertyList", {
             companyId: companyId,
             list: valueById
-
+    
         }).then(x => { return x.data }).catch(x => { return x });
         setLoading(false)
 
@@ -497,11 +498,14 @@ export default function CompanyProperty({ changeTopic, companyName, companyType,
                                                 thumbColor={false ? "#f5dd4b" : "#f4f3f4"}
                                                 ios_backgroundColor="#3e3e3e"
                                                 onValueChange={(val) => {
+                                                   console.log(val)
                                                     changeVal(val, item.id, false);
                                                     setHideLabel();
                                                 }}
-                                                value={valueById.find((x) => x.id === item.id)?.value === "True"}
+                                                
+                                                value={valueById.find((x) => x.id === item.id)?.value === true||valueById.find((x) => x.id === item.id)?.value === "True"}
                                             />
+                                            {/* <Text>{JSON.stringify( valueById.find((x) => x.id === item.id)?.value)}</Text> */}
                                         </View>
                                     </View>
                                 </View>
